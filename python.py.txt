@@ -1,22 +1,40 @@
 import hashlib
-password=input("Enter password: ")
-score=0
-if len(password)>=8:
-    score+=1
-if any(c.isupper() for c in password):
-    score+=1
-if any(c.islower() for c in password):
-    score+=1
-if any(c.isdigit() for c in password):
-    score+=1
-if any(not c.isalnum() for c in password):
-    score+=1
-password_hash=hashlib.sha256(password.encode()).hexdigest()
-if score<=2:
-    strength="Weak"
-elif score<=4:
-    strength="Medium"
-else:
-    strength="Strong"
-print("Password Strength:",strength)
-print("Hash:",password_hash)
+
+def check_password(password):
+    score = 0
+
+    if len(password) >= 8:
+        score += 1
+    if any(c.isupper() for c in password):
+        score += 1
+    if any(c.islower() for c in password):
+        score += 1
+    if any(c.isdigit() for c in password):
+        score += 1
+    if any(not c.isalnum() for c in password):
+        score += 1
+
+    return score
+
+
+def get_strength(score):
+    if score <= 2:
+        return "Weak"
+    elif score <= 4:
+        return "Medium"
+    else:
+        return "Strong"
+
+
+def generate_hash(password):
+    return hashlib.sha256(password.encode()).hexdigest()
+
+
+password = input("Enter password: ")
+
+score = check_password(password)
+strength = get_strength(score)
+password_hash = generate_hash(password)
+
+print("Password Strength:", strength)
+print("Hash:", password_hash)
