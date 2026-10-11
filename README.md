@@ -136,6 +136,20 @@ The application can be tested using sample passwords with different lengths and 
 | Password satisfying all five conditions | The highest strength score should be achieved. |
 
 *Actual results depend on the validation and scoring logic implemented in the application.*
+## 🚀 Deployment
+
+The Password Strength Analyzer is deployed using Streamlit Community Cloud, allowing users to access the application through a web browser.
+
+### 🌐 Live Application
+
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://password-strength-analyzer-ruchika.streamlit.app/)
+
+🔗 **Live Demo:** [Password Strength Analyzer](https://password-strength-analyzer-ruchika.streamlit.app/)
+
+### Deployment Platform
+- **Platform:** Streamlit Community Cloud
+- **Framework:** Streamlit
+- **Source Code:** [GitHub Repository](https://github.com/ruchhiiii/Experiential-Learning-Py)
 
 ## 🔒 Security Considerations
 
