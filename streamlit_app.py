@@ -2,110 +2,69 @@ import streamlit as st
 import hashlib
 import re
 
-st.set_page_config(page_title="Password Strength Analyzer", page_icon="🔐", layout="centered")
-
+st.set_page_config(page_title="Password Strength Analyzer", page_icon="🔐")
 st.title("🔐 Password Strength Analyzer")
 st.caption("PASSWORD SECURITY AND STRENGTH ANALYSIS")
-st.write("Analyze your password strength and improve its security.")
+st.write("Analyze password strength and improve security.")
 st.divider()
-
-st.warning("Security Warning: Do not enter your real or reused password. Use a sample password for this project.")
+st.warning("Use a sample password, not your real password.")
 
 password = st.text_input("Enter Sample Password", type="password")
 
-def check_password(password):
-    score = 0
-    suggestions = []
-
-    if len(password) >= 8:
-        score += 1
-    else:
-        suggestions.append("Use at least 8 characters.")
-
-    if re.search(r"[A-Z]", password):
-        score += 1
-    else:
-        suggestions.append("Add an uppercase letter.")
-
-    if re.search(r"[a-z]", password):
-        score += 1
-    else:
-        suggestions.append("Add a lowercase letter.")
-
-    if re.search(r"[0-9]", password):
-        score += 1
-    else:
-        suggestions.append("Add a number.")
-
-    if re.search(r"[!@#$%^&*(),.?\":{}|<>]", password):
-        score += 1
-    else:
-        suggestions.append("Add a special character.")
-
-    return score, suggestions
+def check_password(p):
+    patterns = [
+        len(p) >= 8, r"[A-Z]", r"[a-z]", r"[0-9]",
+        r"[!@#$%^&*(),.?\":{}|<>]"
+    ]
+    checks = [patterns[0]] + [bool(re.search(x, p)) for x in patterns[1:]]
+    tips = [
+        "Use at least 8 characters.", "Add an uppercase letter.",
+        "Add a lowercase letter.", "Add a number.",
+        "Add a special character."
+    ]
+    return sum(checks), checks, [tips[i] for i, x in enumerate(checks) if not x]
 
 if st.button("Analyze Password", type="primary", use_container_width=True):
-    if password == "":
+    if not password:
         st.warning("Please enter a sample password.")
-
     else:
-        score, suggestions = check_password(password)
-
+        score, checks, suggestions = check_password(password)
         st.subheader("Password Analysis")
-
-        col1, col2 = st.columns(2)
-
-        with col1:
-            st.metric("Security Score", f"{score}/5")
-
-        with col2:
-            if score <= 2:
-                st.error("WEAK")
-            elif score <= 4:
-                st.warning("MEDIUM")
-            else:
-                st.success("STRONG")
-
-        st.progress(score / 5)
+        c1, c2 = st.columns(2)
+        c1.metric("Security Score", f"{score}/5")
 
         if score <= 2:
-            st.error("⚠️ Your password is WEAK! Please create a stronger password.")
+            c2.error("WEAK")
+            st.error("⚠️ Your password is WEAK!")
         elif score <= 4:
-            st.warning("⚠️ Your password is MEDIUM. Improve it for better security.")
+            c2.warning("MEDIUM")
+            st.warning("Improve your password for better security.")
         else:
-            st.success("✅ Your password is STRONG! All five checks passed.")
+            c2.success("STRONG")
+            st.success("✅ All five checks passed!")
 
+        st.progress(score / 5)
         st.divider()
         st.subheader("Security Checklist")
-        checks = [
-            ("At least 8 characters", len(password) >= 8),
-            ("Uppercase letter", bool(re.search(r"[A-Z]", password))),
-            ("Lowercase letter", bool(re.search(r"[a-z]", password))),
-            ("Number", bool(re.search(r"[0-9]", password))),
-            ("Special character", bool(re.search(r"[!@#$%^&*(),.?\":{}|<>]", password)))
-        ]
-        for name, passed in checks:
-            if passed:
-                st.write("✅", name)
-            else:
-                st.write("❌", name)
+
+        names = ["At least 8 characters", "Uppercase letter",
+                 "Lowercase letter", "Number", "Special character"]
+        for name, passed in zip(names, checks):
+            st.write(("✅ " if passed else "❌ ") + name)
+
         st.divider()
-        st.subheader("Suggestions to Improve Your Password")
+        st.subheader("Suggestions")
         if suggestions:
-            for suggestion in suggestions:
-                st.write("•", suggestion)
+            for tip in suggestions:
+                st.write("•", tip)
         else:
             st.success("All password checks passed!")
 
         st.divider()
         st.subheader("SHA-256 Hash")
-
-        hash_value = hashlib.sha256(password.encode("utf-8")).hexdigest()
-        st.code(hash_value, language="text")
-
-        st.caption("SHA-256 generates a fixed-length hash from the entered text.")
-
-        st.warning("Important: SHA-256 alone is not suitable for storing real user passwords. This feature is for educational demonstration only.")
+        st.code(hashlib.sha256(password.encode("utf-8")).hexdigest())
+        st.caption("SHA-256 converts input text into a fixed-length hash.")
+        st.warning("SHA-256 alone is not suitable for storing real passwords.")
 
 st.divider()
 st.caption("Password Strength Analyzer | Python | Streamlit | SHA-256")
